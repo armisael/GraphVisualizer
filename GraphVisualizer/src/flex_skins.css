@@ -1,0 +1,189 @@
+AccordionHeader
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="AccordionHeader_disabledSkin");
+	downSkin: Embed(source="flex_skins.swf", symbol="AccordionHeader_downSkin");
+	overSkin: Embed(source="flex_skins.swf", symbol="AccordionHeader_overSkin");
+	selectedSkin: Embed(source="flex_skins.swf", symbol="AccordionHeader_selectedSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="AccordionHeader_upSkin");
+}
+Button
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="Button_disabledSkin");
+	downSkin: Embed(source="flex_skins.swf", symbol="Button_downSkin");
+	overSkin: Embed(source="flex_skins.swf", symbol="Button_overSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="Button_upSkin");
+}
+ButtonBar
+{
+	buttonDisabledSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_buttonDisabledSkin");
+	buttonDownSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_buttonDownSkin");
+	buttonOverSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_buttonOverSkin");
+	buttonSelectedDisabledSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_buttonSelectedDisabledSkin");
+	buttonSelectedUpSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_buttonSelectedUpSkin");
+	buttonUpSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_buttonUpSkin");
+	firstDisabledSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_firstDisabledSkin");
+	firstDownSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_firstDownSkin");
+	firstOverSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_firstOverSkin");
+	firstSelectedDisabledSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_firstSelectedDisabledSkin");
+	firstSelectedUpSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_firstSelectedUpSkin");
+	firstUpSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_firstUpSkin");
+	lastDisabledSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_lastDisabledSkin");
+	lastDownSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_lastDownSkin");
+	lastOverSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_lastOverSkin");
+	lastSelectedDisabledSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_lastSelectedDisabledSkin");
+	lastSelectedUpSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_lastSelectedUpSkin");
+	lastUpSkin: Embed(source="flex_skins.swf", symbol="ButtonBar_lastUpSkin");
+}
+CheckBox
+{
+	disabledIcon: Embed(source="flex_skins.swf", symbol="CheckBox_disabledIcon");
+	downIcon: Embed(source="flex_skins.swf", symbol="CheckBox_downIcon");
+	overIcon: Embed(source="flex_skins.swf", symbol="CheckBox_overIcon");
+	selectedDisabledIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedDisabledIcon");
+	selectedDownIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedDownIcon");
+	selectedOverIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedOverIcon");
+	selectedUpIcon: Embed(source="flex_skins.swf", symbol="CheckBox_selectedUpIcon");
+	upIcon: Embed(source="flex_skins.swf", symbol="CheckBox_upIcon");
+}
+ColorPicker
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="ColorPicker_disabledSkin");
+	downSkin: Embed(source="flex_skins.swf", symbol="ColorPicker_downSkin");
+	overSkin: Embed(source="flex_skins.swf", symbol="ColorPicker_overSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="ColorPicker_upSkin");
+}
+DataGrid
+{
+	columnDropIndicatorSkin: Embed(source="flex_skins.swf", symbol="DataGrid_columnDropIndicatorSkin");
+	columnResizeSkin: Embed(source="flex_skins.swf", symbol="DataGrid_columnResizeSkin");
+	headerSeparatorSkin: Embed(source="flex_skins.swf", symbol="DataGrid_headerSeparatorSkin");
+	sortArrowSkin: Embed(source="flex_skins.swf", symbol="DataGrid_sortArrowSkin");
+	stretchCursor: Embed(source="flex_skins.swf", symbol="DataGrid_stretchCursor");
+}
+DateChooser
+{
+	nextMonthDisabledSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextMonthDisabledSkin");
+	nextMonthDownSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextMonthDownSkin");
+	nextMonthOverSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextMonthOverSkin");
+	nextMonthUpSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextMonthUpSkin");
+	nextYearDisabledSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextYearDisabledSkin");
+	nextYearDownSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextYearDownSkin");
+	nextYearOverSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextYearOverSkin");
+	nextYearUpSkin: Embed(source="flex_skins.swf", symbol="DateChooser_nextYearUpSkin");
+	prevMonthDisabledSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevMonthDisabledSkin");
+	prevMonthDownSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevMonthDownSkin");
+	prevMonthOverSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevMonthOverSkin");
+	prevMonthUpSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevMonthUpSkin");
+	prevYearDisabledSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevYearDisabledSkin");
+	prevYearDownSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevYearDownSkin");
+	prevYearOverSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevYearOverSkin");
+	prevYearUpSkin: Embed(source="flex_skins.swf", symbol="DateChooser_prevYearUpSkin");
+	rollOverIndicatorSkin: Embed(source="flex_skins.swf", symbol="DateChooser_rollOverIndicatorSkin");
+	selectionIndicatorSkin: Embed(source="flex_skins.swf", symbol="DateChooser_selectionIndicatorSkin");
+	todayIndicatorSkin: Embed(source="flex_skins.swf", symbol="DateChooser_todayIndicatorSkin");
+}
+DateField
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="DateField_disabledSkin");
+	downSkin: Embed(source="flex_skins.swf", symbol="DateField_downSkin");
+	overSkin: Embed(source="flex_skins.swf", symbol="DateField_overSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="DateField_upSkin");
+}
+DividedBox
+{
+	dividerSkin: Embed(source="flex_skins.swf", symbol="DividedBox_dividerSkin");
+	horizontalCursor: Embed(source="flex_skins.swf", symbol="DividedBox_horizontalCursor");
+	verticalCursor: Embed(source="flex_skins.swf", symbol="DividedBox_verticalCursor");
+}
+DragManager
+{
+	copyCursor: Embed(source="flex_skins.swf", symbol="DragManager_copyCursor");
+	defaultDragImageSkin: Embed(source="flex_skins.swf", symbol="DragManager_defaultDragImageSkin");
+	linkCursor: Embed(source="flex_skins.swf", symbol="DragManager_linkCursor");
+	moveCursor: Embed(source="flex_skins.swf", symbol="DragManager_moveCursor");
+	rejectCursor: Embed(source="flex_skins.swf", symbol="DragManager_rejectCursor");
+}
+FormItem
+{
+	indicatorSkin: Embed(source="flex_skins.swf", symbol="FormItem_indicatorSkin");
+}
+HScrollBar
+{
+	thumbIcon: Embed(source="flex_skins.swf", symbol="HScrollBar_thumbIcon");
+}
+LinkButton
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="LinkButton_disabledSkin");
+	downSkin: Embed(source="flex_skins.swf", symbol="LinkButton_downSkin");
+	overSkin: Embed(source="flex_skins.swf", symbol="LinkButton_overSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="LinkButton_upSkin");
+}
+Menu
+{
+	branchDisabledIcon: Embed(source="flex_skins.swf", symbol="Menu_branchDisabledIcon");
+	branchIcon: Embed(source="flex_skins.swf", symbol="Menu_branchIcon");
+	checkDisabledIcon: Embed(source="flex_skins.swf", symbol="Menu_checkDisabledIcon");
+	checkIcon: Embed(source="flex_skins.swf", symbol="Menu_checkIcon");
+	radioDisabledIcon: Embed(source="flex_skins.swf", symbol="Menu_radioDisabledIcon");
+	radioIcon: Embed(source="flex_skins.swf", symbol="Menu_radioIcon");
+	separatorSkin: Embed(source="flex_skins.swf", symbol="Menu_separatorSkin");
+}
+MenuBar
+{
+	backgroundSkin: Embed(source="flex_skins.swf", symbol="MenuBar_backgroundSkin");
+	itemDownSkin: Embed(source="flex_skins.swf", symbol="MenuBar_itemDownSkin");
+	itemOverSkin: Embed(source="flex_skins.swf", symbol="MenuBar_itemOverSkin");
+	itemUpSkin: Embed(source="flex_skins.swf", symbol="MenuBar_itemUpSkin");
+}
+Panel
+{
+	borderSkin: Embed(source="flex_skins.swf", symbol="Panel_borderSkin");
+	closeButtonDisabledSkin: Embed(source="flex_skins.swf", symbol="Panel_closeButtonDisabledSkin");
+	closeButtonDownSkin: Embed(source="flex_skins.swf", symbol="Panel_closeButtonDownSkin");
+	closeButtonOverSkin: Embed(source="flex_skins.swf", symbol="Panel_closeButtonOverSkin");
+	closeButtonUpSkin: Embed(source="flex_skins.swf", symbol="Panel_closeButtonUpSkin");
+	controlBarBackgroundSkin: Embed(source="flex_skins.swf", symbol="Panel_controlBarBackgroundSkin");
+}
+PopUpButton
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="PopUpButton_disabledSkin");
+	downLeftSkin: Embed(source="flex_skins.swf", symbol="PopUpButton_downLeftSkin");
+	downRightSkin: Embed(source="flex_skins.swf", symbol="PopUpButton_downRightSkin");
+	overLeftSkin: Embed(source="flex_skins.swf", symbol="PopUpButton_overLeftSkin");
+	overRightSkin: Embed(source="flex_skins.swf", symbol="PopUpButton_overRightSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="PopUpButton_upSkin");
+}
+RadioButton
+{
+	disabledIcon: Embed(source="flex_skins.swf", symbol="RadioButton_disabledIcon");
+	downIcon: Embed(source="flex_skins.swf", symbol="RadioButton_downIcon");
+	overIcon: Embed(source="flex_skins.swf", symbol="RadioButton_overIcon");
+	upIcon: Embed(source="flex_skins.swf", symbol="RadioButton_upIcon");
+}
+ScrollBar
+{
+	thumbIcon: Embed(source="flex_skins.swf", symbol="ScrollBar_thumbIcon");
+}
+ScrollThumb
+{
+	upSkin: Embed(source="flex_skins.swf", symbol="ScrollThumb_upSkin");
+}
+SliderThumb
+{
+	disabledSkin: Embed(source="flex_skins.swf", symbol="SliderThumb_disabledSkin");
+	downSkin: Embed(source="flex_skins.swf", symbol="SliderThumb_downSkin");
+	overSkin: Embed(source="flex_skins.swf", symbol="SliderThumb_overSkin");
+	upSkin: Embed(source="flex_skins.swf", symbol="SliderThumb_upSkin");
+}
+ToolTip
+{
+	borderSkin: Embed(source="flex_skins.swf", symbol="ToolTip_borderSkin");
+}
+Tree
+{
+	defaultLeafIcon: Embed(source="flex_skins.swf", symbol="Tree_defaultLeafIcon");
+	disclosureClosedIcon: Embed(source="flex_skins.swf", symbol="Tree_disclosureClosedIcon");
+	disclosureOpenIcon: Embed(source="flex_skins.swf", symbol="Tree_disclosureOpenIcon");
+	folderClosedIcon: Embed(source="flex_skins.swf", symbol="Tree_folderClosedIcon");
+	folderOpenIcon: Embed(source="flex_skins.swf", symbol="Tree_folderOpenIcon");
+}

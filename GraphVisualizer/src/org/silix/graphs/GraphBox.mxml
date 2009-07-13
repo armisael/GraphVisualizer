@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.HSlider;
+			import mx.controls.ProgressBar;
+			import mx.controls.ProgressBarMode;
+			import org.silix.graphs.parsers.IParser;
+			import org.silix.graphs.parsers.DotParser;
+			import org.silix.graphs.vertexes.GenericVertex;
+			import org.silix.graphs.vertexes.LastfmVertex;
+			import org.silix.graphs.vertexes.LabeledVertex;
+			import org.silix.graphs.edges.GenericEdge;
+			import org.silix.graphs.edges.TrustletEdge;
+			import org.silix.graphs.edges.HistoryEdge;
+			import org.silix.graphs.edges.LastfmEdge;
+			import org.silix.graphs.edges.LabeledEdge;
+			
+			include 'Algorithms.as';
+			
+			public static const LOADED: String = "Graph.Loaded";
+			public static const DRAWN: String = "Graph.drawn";
+		
+			private var _url:String = null;
+			private var _server_path:String;
+			private var _error_function:Function = null;
+			private var _vertexOverFunction:Function = null;
+			private var _edgeOverFunction:Function = null;
+			private var g:Graph;
+			private var g_cnt: int = 0;
+			private var g_current: int = 0;
+			private var g_info:Array = new Array();
+			private var vertexClass: Class;
+			private var edgeClass: Class;
+			private var lastAlgorithm: Object;
+			
+			public var progressBar: ProgressBar;
+				
+				
+			
+			/* =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~
+		 	 * GETTER / SETTER
+		 	 * =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~ */
+		
+			public function set url(url:String):void
+			{
+				_url = url;
+				if (_url.indexOf("://") < 10) {
+					_server_path = _url.substr(0, _url.lastIndexOf("/")+1);
+				}
+			}
+			
+			public function set error(fun:Function):void
+			{
+				_error_function = fun;
+			}
+			
+			public function get graph():Graph
+			{
+				return g;
+			}
+			
+			public function get vertexOver():Function { return _vertexOverFunction; };
+			public function set vertexOver(fun:Function):void
+			{
+				_vertexOverFunction = fun;
+			}
+			
+			public function get edgeOver():Function { return _edgeOverFunction; };
+			public function set edgeOver(fun:Function):void
+			{
+				_edgeOverFunction = fun;
+			}
+			
+			public function get nGraphs():int
+			{
+				return g_info.length;
+			}
+			
+			public function draw(algorithm:Object):void
+			{
+				if (contains(info_box)) this.removeChild(info_box); // the info_box is the "READY!" label!
+				if (!contains(g)) addChild(g);
+				
+				lastAlgorithm = algorithm;
+				Object(g).draw(algorithm); //g.draw( algorithm );
+				this.dispatchEvent(new Event(GraphBox.DRAWN));
+			}
+			
+			public function changeToGraph(i:int):void
+			{
+				loadStart();
+				
+				g_cnt = i;
+				downloadNextGraph();
+			}
+			
+			
+			
+			/* =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~
+			 * PRIVATE METHODS
+			 * =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~ */
+			private function init():void
+			{	
+				loadStart();
+				var xmlLoader:URLLoader = new URLLoader(); 
+				xmlLoader.addEventListener(Event.COMPLETE, onDataReceived);
+				xmlLoader.addEventListener(IOErrorEvent.IO_ERROR, onError );
+				
+				try {
+					xmlLoader.load(new URLRequest(_url));
+				} catch (e:Error) {
+					onError(e);
+				} 
+			}
+			
+			private function onDataReceived(evt:Event):void
+			{
+				var x:XML = new XML(evt.target.data);
+				
+				vertexClass = string2vertexClass(x.attribute("vertexes"));
+				edgeClass = string2edgeClass(x.attribute("edges"));
+				
+				var j:int = 0;
+				var date: String;
+				var url: String;
+				for (var i:String in x.graph) {
+					date = x.graph[i].attribute("date");
+					url = x.graph[i].text();
+					if (url.indexOf("://") < 0) url = _server_path + url;
+					g_info[j++] = { date: date, url: url, parsed: false };	
+				}
+				
+				g = new Graph();
+				g.vertexClass = vertexClass;
+				g.edgeClass = edgeClass;
+				g.vertexOverFunction = _vertexOverFunction;
+				g.edgeOverFunction = _edgeOverFunction;
+			
+				downloadNextGraph();
+			}
+			
+			private function onGraphReceived(evt:Event = null):void
+			{
+				var p:IParser = new DotParser();
+				if (evt != null) {
+					if (p.can_parse(evt.target.data)) {
+						g.changeTo(g_info[g_cnt].date); //g.starting(g_info[g_cnt].date);
+						p.parse(evt.target.data, g);
+						g_info[g_cnt].parsed = true;
+						g.complete();
+					} else { 
+						onError(new Error("Unable to parse received file"));
+						return;
+					}
+				} else { // we have already parsed the graph.
+					g.changeTo(g_info[g_cnt].date);
+				}
+				this.dispatchEvent(new Event(GraphBox.LOADED));
+				loadStop();	
+				
+				// if we have already drawn the graph, we are changing the time:
+				// so we have to draw the updated graph.
+				if (contains(g)) {
+					draw(lastAlgorithm);
+				}
+			}
+			
+			private function downloadNextGraph():void
+			{
+				if (g_cnt >= g_info.length) {
+					loadStop();
+					return;
+				}
+				
+				if (g_info[g_cnt].parsed) {
+					onGraphReceived();
+					return;	
+				}
+				
+				var g_i: Object = g_info[g_cnt];
+				trace("scarico",g_i.url);
+				
+				var loader:URLLoader = new URLLoader(); 
+				loader.addEventListener(Event.COMPLETE, onGraphReceived);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, onError );
+				
+				try {
+					loader.load(new URLRequest(g_i.url + "?" + new Date().time));
+				} catch (e:Error) {
+					onError(e);
+				} 
+			}
+			
+			private function onError(e:Object):void
+			{
+				if (_error_function != null) {
+					_error_function(e);
+				}
+			}
+			
+			private function string2vertexClass(v:String):Class
+			{
+				if (v == '') return GenericVertex;
+				if (v == 'LastfmVertex') return LastfmVertex;
+				if (v == 'LabeledVertex') return LabeledVertex;
+				return GenericVertex;
+			}
+			
+			private function string2edgeClass(v:String):Class
+			{
+				if (v == '') return GenericEdge;
+				if (v == 'TrustletEdge') return TrustletEdge;
+				if (v == 'HistoryEdge') return HistoryEdge;
+				if (v == 'LastfmEdge') return LastfmEdge;
+				if (v == 'LabeledEdge') return LabeledEdge;
+				return GenericEdge;
+			}
+			
+			private function loadStart():void
+			{
+				if (progressBar) {
+					 progressBar.visible = true;
+					 progressBar.indeterminate = true;	
+				}
+			}
+			private function loadStop():void
+			{
+				if (progressBar) {
+					 progressBar.visible = false;
+					 info_box.visible = true;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Box id="info_box" horizontalAlign="center" visible="false">
+		<mx:Label text="READY!" fontSize="30"/>
+		<mx:Label text="Select an algorithm from the Control Panel and click on 'Draw it!' to begin."/>
+	</mx:Box>
+</mx:Canvas>

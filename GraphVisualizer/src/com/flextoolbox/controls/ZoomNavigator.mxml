@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:toolbox="com.flextoolbox.controls.*"
+			width="{collapsed_width}" height="{collapsed_height}" creationComplete="init()"
+			horizontalGap="0" verticalGap="0" horizontalAlign="right">
+	
+	<mx:Parallel id="show">
+		<mx:Fade alphaTo="1" easingFunction="{Circular.easeOut}"/>
+		<mx:Resize widthTo="{expanded_width}" heightTo="{expanded_height-20}" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Parallel id="expand_all">
+		<mx:Move xTo="{this.x - expanded_width + collapsed_width}" yTo="{this.y - expanded_height + collapsed_height}" easingFunction="{Circular.easeOut}"/>
+		<mx:Resize widthTo="{expanded_width}" heightTo="{expanded_height}" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Parallel id="hide">
+		<mx:Fade alphaTo="0" easingFunction="{Circular.easeIn}"/>
+		<mx:Resize widthTo="0" heightTo="0" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Parallel id="collapse_all">
+		<mx:Move xTo="{this.x + expanded_width - collapsed_width}" yTo="{this.y + expanded_height - collapsed_height}" easingFunction="{Circular.easeOut}"/>
+		<mx:Resize widthTo="{collapsed_width}" heightTo="{collapsed_height}" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.effects.easing.*;            
+			import mx.events.ItemClickEvent;
+			import caurina.transitions.Tweener;
+			import org.silix.graphs.vertexes.GenericVertex;
+			
+			[Bindable]
+        	private var _zf: ZoomFrame;
+        	
+        	private const collapsed_width: Number = 60;
+        	private const collapsed_height: Number = 20;
+        	private const expanded_width: Number = 130;
+        	private const expanded_height: Number = 130;
+        	private const zoom_anim: String = "easeOutCubic";
+        	private const zoom_anim_time: Number = 0.6;
+			
+			/* =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~
+			 * PUBLIC METHODS
+			 * =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~ */
+			public function set zoomFrame(zf:ZoomFrame):void
+			{
+				_zf = zf;
+			}
+			
+			public function contentLoaded():void
+			{
+				_fit_or_1();
+				navigationBox.contentLoaded();
+			}
+			
+			/* =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~
+			 * PRIVATE METHODS
+			 * =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~ */
+			private function init():void
+			{
+				resizeHandler(null);
+				_zf.addEventListener(Event.RESIZE, resizeHandler);
+			}
+			
+			public function get fit_scale(): Number
+			{
+				_zf.validateNow();
+				// The -20 is for the scrollbars
+				var r1: Number = (_zf.width-20) / (_zf.content.width / _zf.scale);
+				var r2: Number = (_zf.height-20) / (_zf.content.height / _zf.scale);
+				if (r2 < r1) r1 = r2;
+				return r1;
+			}
+			
+			private function _fit():void
+			{
+				Tweener.addTween(_zf, {scale : this.fit_scale, transition: zoom_anim, time: zoom_anim_time});
+			}
+			
+			private function _fit_or_1():void
+			{
+				Tweener.addTween(_zf, {scale : Math.min(1, fit_scale), transition: zoom_anim, time: zoom_anim_time});
+			}
+			
+			private function btn_show_hide_click():void
+			{
+				if (box.visible)
+					collapse();
+				else expand();
+			}
+			
+			private function btns_zoom_click(evt:ItemClickEvent):void
+			{
+				switch(evt.index) {
+					case 0:		// zoom in
+						Tweener.addTween(_zf, {scale : _zf.scale + 0.25, transition: zoom_anim, time: zoom_anim_time});
+						break;
+					case 1:		// zoom out
+						Tweener.addTween(_zf, {scale : _zf.scale - 0.25, transition: zoom_anim, time: zoom_anim_time});
+						break;
+					case 2:		// zoom fit
+						_fit();
+						break;
+					case 3:		// zoom original
+						Tweener.addTween(_zf, {scale : 1, transition: zoom_anim, time: zoom_anim_time});
+						break;
+				}
+			}
+			
+			private function expand():void
+			{
+				box.visible = true;
+				expand_all.createInstance(this).play();
+			}
+			
+			private function collapse():void
+			{
+				box.visible = false;
+				collapse_all.createInstance(this).play();
+			}
+			
+			private function resizeHandler(evt:Event):void
+			{
+				this.x = _zf.width - this.width - 20;
+				this.y = _zf.height - this.height - 20;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Box id="box" width="0" height="0" visible="false" showEffect="show" hideEffect="hide" 
+		horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="bottom" direction="horizontal" horizontalGap="0">
+		<mx:ButtonBar direction="vertical" width="20" itemClick="btns_zoom_click(event);" >
+			<mx:Array>
+				<mx:Object icon="@Embed('images/zoom_in.png')"/>
+		        <mx:Object icon="@Embed('images/zoom_out.png')" />
+		        <mx:Object icon="@Embed('images/zoom_fit_best.png')"/>
+		        <mx:Object icon="@Embed('images/zoom_original.png')" />
+		    </mx:Array>
+		</mx:ButtonBar>
+		<toolbox:NavigationBox id="navigationBox" zoomNavigator="{this}" target="{_zf}" width="100%" height="100%"/>
+	</mx:Box>
+	<mx:HBox verticalAlign="middle" horizontalGap="0" color="black">	
+		<mx:Label id="lblZoom" text="{Math.round(_zf.scale*100) + '%'}"/>
+		<mx:Button id="btn_show_hide" width="20" height="20" click="btn_show_hide_click()" icon="@Embed('images/top.png')"/>
+	</mx:HBox>
+	
+	
+</mx:Box>

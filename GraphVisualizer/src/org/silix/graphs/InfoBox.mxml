@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:toolbox="com.flextoolbox.controls.*"
+			width="{collapsed_width}" height="{collapsed_height}" creationComplete="init()"
+			horizontalGap="0" verticalGap="0" horizontalAlign="left" color="black" title="Info box">
+	
+	<mx:Parallel id="show">
+		<mx:Fade alphaTo="1" easingFunction="{Circular.easeOut}"/>
+		<mx:Resize widthTo="{expanded_width}" heightTo="{expanded_height-20}" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Parallel id="expand_all">
+		<mx:Move yTo="{this.y - expanded_height + collapsed_height}" easingFunction="{Circular.easeOut}"/>
+		<mx:Resize widthTo="{expanded_width}" heightTo="{expanded_height}" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Parallel id="hide">
+		<mx:Fade alphaTo="0" easingFunction="{Circular.easeIn}"/>
+		<mx:Resize widthTo="0" heightTo="0" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Parallel id="collapse_all">
+		<mx:Move yTo="{this.y + expanded_height - collapsed_height}" easingFunction="{Circular.easeOut}"/>
+		<mx:Resize widthTo="{collapsed_width}" heightTo="{collapsed_height}" easingFunction="{Circular.easeOut}"/>
+	</mx:Parallel>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.effects.easing.*;            
+			import mx.events.ItemClickEvent;
+			import caurina.transitions.Tweener;
+			import org.silix.graphs.vertexes.GenericVertex;
+			
+			private const collapsed_width: Number = 20;
+        	private const collapsed_height: Number = 20;
+        	private const expanded_width: Number = 130;
+        	private const expanded_height: Number = 130;
+        	private const zoom_anim: String = "easeOutCubic";
+        	private const zoom_anim_time: Number = 0.6;
+        	
+        	private var _dataProvider:Object;
+			
+			/* =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~
+			 * PUBLIC METHODS
+			 * =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~ */
+			public function get dataProvider():Object { return _dataProvider; }
+			public function set dataProvider(v:Object):void
+			{
+				_dataProvider = v;
+				_dataProvider.addEventListener(FlexEvent.DATA_CHANGE, updateData);
+			}
+			
+			public function expand():void
+			{
+				if (box.visible) return;
+				box.visible = true;
+				expand_all.createInstance(this).play();
+			}
+			
+			public function collapse():void
+			{
+				if (!box.visible) return;
+				box.visible = false;
+				collapse_all.createInstance(this).play();
+			}
+			
+			/* =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~
+			 * PRIVATE METHODS
+			 * =~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~ */
+			private function init():void
+			{
+				this.parent.addEventListener(Event.RESIZE, resizeHandler);
+				this.y = this.parent.height - collapsed_height - 20;
+			}
+			
+			private function updateData(evt:FlexEvent):void
+			{
+				if (_dataProvider.data.hasOwnProperty("value"))
+					title = _dataProvider.data.value;
+				else title = _dataProvider.data.name;
+				
+				if (_dataProvider.data.hasOwnProperty("info"))
+					lbl.text = _dataProvider.data.info;
+			}
+			
+			private function btn_show_hide_click():void
+			{
+				if (box.visible)
+					collapse();
+				else expand();
+			}
+			
+			private function resizeHandler(evt:Event):void
+			{
+				this.y = this.parent.height - collapsed_height - 20
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Box id="box" width="0" height="0" visible="false" showEffect="show" hideEffect="hide" paddingTop="30"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="top" horizontalGap="0">
+		<mx:Text id="lbl" text="Select a vertex or an edge to view some info..." width="100%"/>
+	</mx:Box>
+	<mx:HBox verticalAlign="middle" horizontalGap="0" color="black">
+		<mx:Button id="btn_show_hide" width="20" height="20" click="btn_show_hide_click()" icon="@Embed('images/info.png')"/>
+	</mx:HBox>
+	
+	
+</mx:Panel>

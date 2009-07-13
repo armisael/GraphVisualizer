@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:toolbox="com.flextoolbox.controls.*"
+				xmlns:graph="org.silix.graphs.*"
+				xmlns:utils="org.silix.utils.*"
+	 			layout="absolute" backgroundImage="@Embed(source='images/clarity2.png')" color="white" backgroundColor="#0011D4"
+	 			applicationComplete="init()">
+	
+	<mx:Style>
+  	 	@font-face {
+        	src:url("../fonts/Vera.ttf");
+	        fontFamily: "Vera";
+	     }    
+	     .myPlainStyle {
+	        fontFamily: "Vera";
+	        fontSize: 11;
+	        color: #FFFFFF;
+	        padding-bottom: 0;
+	        padding-left: 0;
+	        padding-right: 0;
+	        padding-top: 0;
+	     }
+  	</mx:Style>
+	
+	<mx:Script>
+		/*
+			@TODO:
+			- archi / vertici nuovi illuminati
+			- selezione nodi
+			- dati dei nodi dinamici?
+			http://www.graphviz.org/Theory.php
+			
+			- stop di animazioni se si fa draw!
+			- randomView dipendente da |V|
+			- evitare spostamenti dovuti ai rectangle
+			- errore quando non c'e la rete
+			- over dei lati e non solo dei vertici!
+			- fusione delle options per vertici grafi e lati
+			- le options sono dipendenti dal tempo!!!!!
+			- zoom in sul centro e non sul punto in alto a dx
+			- velocizzare il parser
+			- stop del "follow your nose" se non si muove piu` nulla...
+			- dati sbagliati sul numero di vertici!!!
+			- scomparsa seria dei lati (non e` un granche` al momento)
+			- la frequenza di ridisegno degli archi e` decisamente un problema...
+			- salvare la visualizzazione in dot con le info delle coordinate!!
+			- scelta del tipo di distanza da utilizzare!
+			- scelta dell'algoritmo di inizializzazione (random | circle) per forceDirectedDraw
+			- nodi invisibili sono comunque selezionabili
+			- visualizzazione informazioni lati
+			- se cambio il tempo prima di visualizzare la randomview non posiziona - ovviamente - i nodi
+			- bug sul posizionamento della finestra di info quando si fa il resize
+			- colorare le aree per i cambiamenti!!!!!
+		*/
+	
+        import mx.effects.easing.*;
+        include "org/silix/graphs/Algorithms.as"
+        
+        [Bindable]
+        //private var dot_url:String = "http://localhost/dataset/dummy-graph.xml?"+ new Date().time;
+        //private var dot_url:String = "http://localhost/dataset/tesi.xml?"+ new Date().time;
+        //private var dot_url:String = "http://localhost/dataset/monks.xml?"+ new Date().time;
+        //private var dot_url:String = "http://localhost/dataset/complete.xml?"+ new Date().time;
+        private var dot_url:String = "http://localhost/dataset/ArmisaelSilix_lastfm.xml?"+ new Date().time;
+        //private var dot_url:String = "http://localhost/dataset/history-graph.xml?"+ new Date().time;
+        //private var dot_url:String = "http://localhost/dataset/advogato-graph.xml?"+ new Date().time;
+        
+        [Bindable]
+        private var error:String = null;
+		
+		//[Bindable]
+		//private var _data:Object = {info: "infos!!!"};
+		
+		private function init():void
+		{
+			graph.addEventListener(GraphBox.LOADED, onLoaded);
+			graph.addEventListener(GraphBox.DRAWN, onDrawn);
+		}
+		
+		private function onLoaded(evt:Event):void
+		{
+			gName.text = graph.graph.name + ", " + graph.graph.currentTime;
+			gName2.text = "Graph name: "+graph.graph.name;
+			gVertexCard.text = "#Vertexes: " + graph.graph.vertexCard;
+			gEdgeCard.text = "#Edges: " + graph.graph.edgeCard;
+			gComponents.text = "#Components: " + graph.graph.nComponents;
+			
+			timeSlider.maximum = graph.nGraphs-1;
+			btnDraw.enabled = true;
+			timeBox.visible = true;
+		}
+		
+		private function onDrawn(evt:Event):void
+		{
+			zoomNavigator.contentLoaded();
+		}
+		
+		private function onError(evt:Object):void
+		{
+			trace("Unable to load data!"); // se lo tolgo non viene visualizzata l'immagine O_O
+			if (evt != null) 
+				if (evt is IOErrorEvent)
+					error = "The requested file does not exists.";
+				if (evt is Error)
+					error = Error(evt).message;
+		
+			if (error == null) error = "Unable to load data.";
+			if (errorImage) errorImage.visible = true;
+		}
+		
+		private function onVertex(evt:Event):void
+		{
+			this.infoBox.expand();
+			this.data = evt.target;
+		}
+		
+		private function onTimeChanged():void
+		{
+			graph.changeToGraph(timeSlider.value);
+		}
+    </mx:Script>
+
+	<mx:Resize id="resize_w_to_0" widthTo="0" easingFunction="{Circular.easeOut}" duration="500"/>
+	<mx:Resize id="resize_w_to_200" widthTo="200" easingFunction="{Circular.easeOut}" duration="500"/>
+	<mx:Resize id="resize_h_to_0" heightTo="0" easingFunction="{Linear.easeOut}" duration="500"/>
+	<mx:Resize id="resize_h_to_h1" heightTo="26" easingFunction="{Circular.easeOut}" duration="500"/>
+	<mx:Resize id="resize_h_to_h2" heightTo="53" easingFunction="{Circular.easeOut}" duration="500"/>
+	<mx:Resize id="resize_h_to_h3" heightTo="79" easingFunction="{Circular.easeOut}" duration="500"/>
+	<mx:Resize id="resize_h_to_h4" heightTo="106" easingFunction="{Circular.easeOut}" duration="500"/>
+	 			
+	<mx:VBox width="100%" height="100%" paddingTop="5">
+		<mx:HBox width="100%" height="22" verticalAlign="middle">
+			<mx:HBox verticalAlign="middle">
+				<mx:Label text="GraphVisualizer" />
+				<mx:Label id="gName" fontSize="18" paddingTop="-4" fontWeight="bold" color="yellow"/>
+			</mx:HBox>
+			<mx:HBox width="100%" horizontalAlign="right">	
+				<mx:Image id="errorImage" source="images/error.png" visible="{error != null}" verticalAlign="middle"/>
+				<mx:Label text="{error}" maxWidth="300"/>
+				<mx:Button label="Hide control panel" click="{controlBox.visible = !controlBox.visible}"/>
+			</mx:HBox>
+			
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Panel width="100%" height="100%" layout="absolute">
+				
+				<toolbox:ZoomFrame id="zoomFrame" width="100%" height="100%" 
+					color="black" horizontalAlign="center" verticalAlign="middle" horizontalScrollPolicy="on" verticalScrollPolicy="on">
+					<graph:GraphBox id="graph" progressBar="{progressBar}" error="{onError}" vertexOver="{onVertex}" 
+						url="{dot_url}" width="100%" height="100%"/>
+				</toolbox:ZoomFrame>
+				
+				<graph:InfoBox id="infoBox" dataProvider="{this}"/>
+				<toolbox:ZoomNavigator id="zoomNavigator" zoomFrame="{zoomFrame}"/>
+			</mx:Panel>
+			
+			<mx:Panel id="controlBox" width="200" height="100%" hideEffect="resize_w_to_0" showEffect="resize_w_to_200" title="Control Panel"
+					 paddingRight="5" paddingLeft="5" paddingTop="30" horizontalScrollPolicy="off">
+				<mx:VDividedBox width="100%" height="100%" dividerSkin="@Embed('images/separator.png')" verticalGap="40">
+					<mx:VBox width="100%">
+						<mx:Text id="gName2" width="100%"/>
+						<mx:Label id="gVertexCard"/>
+						<mx:Label id="gEdgeCard"/>
+						<mx:Label id="gComponents"/>
+					</mx:VBox>
+					
+					<!-- ALGORITHM CONFIGURATION -->
+					
+					<mx:Box verticalGap="5">
+						<mx:ComboBox id="algorithmChooser" labelField="name" dataProvider="{algorithms}" alternatingItemColors="[0x6d87cc, 0x6d87cc]" />
+						
+						
+						<mx:Box visible="{algorithmChooser.value == randomDraw || algorithmChooser.value == circleDraw || 
+										  algorithmChooser.value == fruchtermanReingoldDraw || algorithmChooser.value == barycenterDraw}" 
+								horizontalGap="1" verticalAlign="middle" hideEffect="resize_h_to_0" showEffect="resize_h_to_h2" verticalScrollPolicy="off">
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Width:" width="75"/>
+								<mx:NumericStepper id="txtWidth" value="{alg_width}" valueCommit="{alg_width = txtWidth.value}" minimum="20" maximum="2000" color="black"/>			 	
+							</mx:HBox>
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Height:" width="75"/>
+								<mx:NumericStepper id="txtHeight" value="{alg_height}" valueCommit="{alg_height = txtHeight.value}" minimum="20" maximum="2000" color="black"/>			 	
+							</mx:HBox>
+						</mx:Box>
+						
+						
+						<mx:Box visible="{algorithmChooser.value == fruchtermanReingoldDraw}" horizontalGap="1" verticalAlign="middle"
+							hideEffect="resize_h_to_0" showEffect="resize_h_to_h3" height="0" verticalScrollPolicy="off">
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Length:" width="75"/>
+								<mx:NumericStepper id="txtLength" value="{alg_l}" valueCommit="{alg_l = txtLength.value}" minimum="20" maximum="2000" color="black"/>			 	
+							</mx:HBox>
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Stiffness:" width="75"/>
+								<mx:NumericStepper id="txtStiffness" value="{alg_k1}" valueCommit="{alg_k1 = txtStiffness.value}" minimum="0" maximum="50" color="black"/>			 	
+							</mx:HBox>
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Repulsion:" width="75"/>
+								<mx:NumericStepper id="txtRepulsion" value="{alg_k2}" valueCommit="{alg_k2 = txtRepulsion.value}" minimum="0" maximum="20000" color="black"/>			 	
+							</mx:HBox>
+						</mx:Box>
+						
+						
+						<mx:Box visible="{algorithmChooser.value == fruchtermanReingoldDraw || algorithmChooser.value == barycenterDraw}" 
+								horizontalGap="1" verticalAlign="middle" hideEffect="resize_h_to_0" showEffect="resize_h_to_h1" height="0" verticalScrollPolicy="off">
+							<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Move factor:" width="75"/>
+								<mx:NumericStepper id="txtMoveFactor" value="{alg_move_factor}" valueCommit="{alg_move_factor = txtMoveFactor.value}" minimum="0.0001" maximum="1" stepSize="0.001" color="black"/>			 	
+							</mx:HBox>
+						</mx:Box>
+						
+						
+						<mx:Box visible="{algorithmChooser.value == barycenterDraw}" 
+								horizontalGap="1" verticalAlign="middle" hideEffect="resize_h_to_0" showEffect="resize_h_to_h1" height="0" verticalScrollPolicy="off">
+							<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Fixed Vertexes:" width="75"/>
+								<mx:NumericStepper id="txtFixed" value="{alg_fixed}" valueCommit="{alg_fixed = txtFixed.value}" minimum="3" maximum="10000" stepSize="1" color="black"/>			 	
+							</mx:HBox>
+						</mx:Box>
+						
+						
+						<mx:Box visible="{algorithmChooser.value == fruchtermanReingoldDraw || algorithmChooser.value == barycenterDraw}"
+								horizontalGap="1" verticalAlign="middle" hideEffect="resize_h_to_0" showEffect="resize_h_to_h2" height="0" verticalScrollPolicy="off">
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="Iterations:" width="75"/>
+								<mx:NumericStepper id="txtIter" value="{alg_iterations}" valueCommit="{alg_iterations = txtIter.value}" minimum="0" maximum="200" color="black"/>			 	
+							</mx:HBox>
+							<mx:HBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+								<mx:Label text="HIterations:" width="75"/>
+								<mx:NumericStepper id="txtHIter" value="{alg_internal_iterations}" valueCommit="{alg_internal_iterations = txtHIter.value}" minimum="0" maximum="200" color="black"/>			 	
+							</mx:HBox>
+						</mx:Box>
+						
+						
+						<mx:Box visible="{algorithmChooser.value == fruchtermanReingoldDraw}" 
+								horizontalGap="1" verticalAlign="middle" hideEffect="resize_h_to_0" showEffect="resize_h_to_h1" height="0" verticalScrollPolicy="off">
+							<mx:ComboBox id="distanceChooser" labelField="name" dataProvider="{distances}" alternatingItemColors="[0x6d87cc, 0x6d87cc]" 
+								valueCommit="{alg_d = distanceChooser.value}" />
+						</mx:Box>
+						
+						
+						
+						<mx:Button id="btnDraw" label="Draw it!" click="graph.draw(algorithmChooser.value)" enabled="false"/>
+					</mx:Box>
+					
+					<!-- END OF ALGORITHM CONFIGURATION -->
+					
+				</mx:VDividedBox>
+				<mx:Box width="100%" horizontalScrollPolicy="off">
+					<mx:HBox id="timeBox" width="100%" visible="false" horizontalScrollPolicy="off">
+						<mx:Button icon="@Embed('images/prev.png')" width="20" click="timeSlider.value--" enabled="{timeSlider.value != timeSlider.minimum}"/>
+						<mx:HSlider id="timeSlider" width="130" minimum="0" maximum="1" snapInterval="1" tickInterval="1" enabled="false"
+							  valueCommit="onTimeChanged()"/>
+						<mx:Button icon="@Embed('images/next.png')" width="20" click="timeSlider.value++" enabled="{timeSlider.value != timeSlider.maximum}"/>
+					</mx:HBox>
+					<mx:ProgressBar id="progressBar" indeterminate="true" width="100%" visible="false"/>
+				</mx:Box>
+				
+			</mx:Panel>
+			
+		</mx:HBox>
+		
+	</mx:VBox>
+	<mx:Style source="flex_skins.css"/>
+	
+	
+</mx:Application>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" resize="resizeHandler()"
+	 horizontalAlign="center" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ScrollEvent;
+			import flash.display.*;
+			import flash.events.*;
+		
+			private var _target: ZoomFrame;
+			private var _zn: ZoomNavigator;
+			
+			public function set target(v:ZoomFrame):void
+			{
+				_target = v;
+				_target.addEventListener(ZoomFrame.SCALED, scaleHandler);
+				_target.addEventListener(ScrollEvent.SCROLL, scrollHandler);
+				_target.addEventListener(Event.RESIZE, onContentResize);
+				_target.content.addEventListener(Event.RESIZE, onContentResize);
+			}
+			
+			public function set zoomNavigator(v:ZoomNavigator):void
+			{
+				_zn = v;
+			}
+			
+			public function contentLoaded():void
+			{
+				set_size();
+			}
+			
+			private function resizeHandler():void
+			{
+				set_size();
+			}
+			
+			private function onContentResize(evt:Event):void
+			{
+				set_size();
+				scaleHandler(null);
+				scrollHandler(null);
+			}
+			
+			private function scrollHandler(evt:ScrollEvent):void
+			{
+				if (_target.content.width > _target.width)
+					navig.x = -_target.content.x / _target.content.width * bg.width;
+				else navig.x = 0;
+				if (_target.content.height > _target.height)
+					navig.y = -_target.content.y / _target.content.height * bg.height;
+				else navig.y = 0;
+			}
+			
+			private function scaleHandler(evt:Event):void
+			{
+				// if we call the validateNow when a contentResize occurs, we have unknown problems...
+				if (evt != null) _target.validateNow();	
+				if (_target.content.width > _target.width)
+					navig.width = _target.width / _target.content.width * bg.width;
+				else navig.width = bg.width;
+				if (_target.content.height > _target.height)
+					navig.height = _target.height / _target.content.height * bg.height;
+				else navig.height = bg.height;
+			}
+			
+			private function set_size():void
+			{
+				// Set the size of the bg canvas. It will take the size of the graph.
+				var w:Number = this.width;
+				var h:Number = this.width / _target.content.width * _target.content.height;
+				if (h > this.height) { 
+					w = this.height / _target.content.height * _target.content.width;
+					h = this.height; 
+				}
+				bg.width = w;
+				bg.height = h;
+				navig.width = w;
+				navig.height = h;
+			}
+		
+			private function init():void
+			{
+				navig.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			}
+			
+		//----------------------------------
+		//  DRAG'n'DROP
+		//----------------------------------
+			
+			private function onMouseDown(evt:MouseEvent):void
+			{
+				this.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				this.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				/*   navig.startDrag(false, new Rectangle(bg.x, bg.y, bg.width - navig.width+1, bg.height - navig.height+1));   */
+				navig.startDrag(false, new Rectangle(0, 0, bg.width - navig.width+1, bg.height - navig.height+1));  
+			}
+			
+			private function onMouseUp(evt:MouseEvent):void
+			{
+				this.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				this.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				navig.stopDrag();
+			}
+			
+			private function onMouseMove(evt:MouseEvent):void
+			{
+				_target.scroll( _target.content.x = -navig.x * _target.content.width / bg.width,
+								_target.content.y = -navig.y * _target.content.height / bg.height);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="bg" backgroundColor="blue" backgroundAlpha="0.2" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Canvas id="navig" backgroundColor="blue" backgroundAlpha="0.5" width="100%" height="100%"/>
+	</mx:Canvas>
+</mx:Box>
